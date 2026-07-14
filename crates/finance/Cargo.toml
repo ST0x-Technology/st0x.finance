@@ -1,0 +1,29 @@
+[package]
+name = "st0x-finance"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "Shared financial domain types for st0x services"
+publish = false
+
+[features]
+default = []
+test-support = ["dep:proptest"]
+
+[dependencies]
+alloy-primitives.workspace = true
+proptest = { workspace = true, optional = true }
+rain-math-float.workspace = true
+serde = { workspace = true, features = ["derive"] }
+rain-math-float-macro.workspace = true
+rain-math-float-serde.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true
