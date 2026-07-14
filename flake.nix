@@ -19,8 +19,12 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          inherit (rainix.devShells.${system}.default) shellHook;
-          inputsFrom = [ rainix.devShells.${system}.default ];
+          packages = [
+            pkgs.cargo
+            pkgs.clippy
+            pkgs.rustc
+            pkgs.rustfmt
+          ];
         };
       }
     );

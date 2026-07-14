@@ -1,0 +1,20 @@
+[package]
+name = "st0x-float-serde"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "Rain Float serialization helpers for st0x services"
+publish = false
+
+[dependencies]
+rain-math-float.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+alloy-primitives.workspace = true
