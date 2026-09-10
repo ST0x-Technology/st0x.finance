@@ -1,0 +1,39 @@
+[workspace]
+members = ["crates/finance", "crates/float-macro", "crates/float-serde"]
+resolver = "2"
+
+[workspace.package]
+version = "0.2.0"
+edition = "2024"
+license = "MIT"
+homepage = "https://github.com/ST0x-Technology/st0x.finance"
+repository = "https://github.com/ST0x-Technology/st0x.finance"
+
+[workspace.dependencies]
+alloy-primitives = "1.6.0"
+proptest = "1.7.0"
+rain-math-float = { version = "0.1.7", git = "https://github.com/rainlanguage/rain.math.float", rev = "e226e5a27125e75208e3e709e1c5eee128bd8b3b" }
+rain-math-float-macro = { package = "st0x-float-macro", path = "crates/float-macro" }
+rain-math-float-serde = { package = "st0x-float-serde", path = "crates/float-serde" }
+serde = "1.0.228"
+serde_json = "1.0.145"
+serde_test = "1.0.177"
+thiserror = "2.0.12"
+trybuild = "1.0.116"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+warnings = "deny"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -1 }
+nursery = { level = "deny", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+enum_glob_use = "allow"
+doc_markdown = "allow"
+items_after_statements = "allow"
+missing_const_for_fn = "allow"
+missing_docs_in_private_items = "allow"
+missing_errors_doc = "allow"
