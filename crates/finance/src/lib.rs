@@ -7,6 +7,7 @@
 pub use rain_math_float::{Float, FloatError};
 
 mod constraint;
+mod decimal_shares;
 mod id;
 #[cfg(feature = "test-support")]
 pub mod proptest;
@@ -16,6 +17,7 @@ mod usd;
 mod usdc;
 
 pub use constraint::{NonNegative, NotNonNegative, NotPositive, Positive};
+pub use decimal_shares::{DecimalShares, DecimalSharesConversionError};
 pub use id::{BlankIdError, Id};
 pub use shares::{FractionalShares, SharesConversionError};
 pub use symbol::{EmptySymbolError, Symbol};
