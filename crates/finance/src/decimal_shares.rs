@@ -4,7 +4,7 @@ use std::fmt::Display;
 use std::str::FromStr;
 
 use alloy_primitives::U256;
-use rust_decimal::{Decimal, prelude::ToPrimitive};
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
 /// A share quantity whose decimal scale is part of its wire representation.
@@ -34,28 +34,31 @@ impl DecimalShares {
     /// # Errors
     ///
     /// Returns an error for negative values, arithmetic overflow, values that
-    /// cannot be represented losslessly with 18 decimals, or values outside
-    /// the supported integer range.
+    /// cannot be represented losslessly with 18 decimals.
     pub fn to_u256_18_decimals(self) -> Result<U256, DecimalSharesConversionError> {
         if self.0.is_sign_negative() {
             return Err(DecimalSharesConversionError::NegativeValue { value: self.0 });
         }
 
-        let multiplier = Decimal::from(10_u128.pow(18));
-        let scaled = self
+        let mantissa: u128 = self
             .0
-            .checked_mul(multiplier)
-            .ok_or(DecimalSharesConversionError::Overflow)?;
+            .mantissa()
+            .try_into()
+            .map_err(|_| DecimalSharesConversionError::NegativeValue { value: self.0 })?;
+        let scale = self.0.scale();
 
-        if !scaled.fract().is_zero() {
-            return Err(DecimalSharesConversionError::PrecisionLoss { value: self.0 });
+        if scale > 18 {
+            let divisor = 10_u128.pow(scale - 18);
+            if !mantissa.is_multiple_of(divisor) {
+                return Err(DecimalSharesConversionError::PrecisionLoss { value: self.0 });
+            }
+
+            return Ok(U256::from(mantissa / divisor));
         }
 
-        let integer = scaled
-            .to_u128()
-            .ok_or(DecimalSharesConversionError::IntegerOutOfRange { value: scaled })?;
-
-        Ok(U256::from(integer))
+        U256::from(mantissa)
+            .checked_mul(U256::from(10_u128.pow(18 - scale)))
+            .ok_or(DecimalSharesConversionError::Overflow)
     }
 }
 
@@ -79,15 +82,12 @@ pub enum DecimalSharesConversionError {
     /// The quantity is negative and cannot be represented by `U256`.
     #[error("share quantity cannot be negative: {value}")]
     NegativeValue { value: Decimal },
-    /// Scaling the decimal value overflowed its exact representation.
+    /// Scaling the decimal value overflowed `U256`.
     #[error("share quantity overflowed while scaling to 18 decimals")]
     Overflow,
     /// The quantity has non-zero precision beyond 18 decimal places.
     #[error("share quantity cannot be represented losslessly with 18 decimals: {value}")]
     PrecisionLoss { value: Decimal },
-    /// The scaled quantity is outside the supported integer range.
-    #[error("scaled share quantity is outside the supported integer range: {value}")]
-    IntegerOutOfRange { value: Decimal },
 }
 
 #[cfg(test)]
@@ -122,6 +122,16 @@ mod tests {
         assert_eq!(
             quantity.to_u256_18_decimals().unwrap(),
             uint!(123456789012345678_U256)
+        );
+    }
+
+    #[test]
+    fn conversion_accepts_large_quantity_that_overflows_decimal_when_scaled() {
+        let quantity = "1000000000000".parse::<DecimalShares>().unwrap();
+
+        assert_eq!(
+            quantity.to_u256_18_decimals().unwrap(),
+            uint!(1000000000000000000000000000000_U256)
         );
     }
 
