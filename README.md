@@ -4,16 +4,19 @@ Shared financial domain types for st0x services.
 
 The `st0x-finance` crate provides checked types for stock symbols, fractional
 shares, exact wire-format share quantities, USD and USDC amounts, positive and
-non-negative values, and tagged identifiers. Decimal arithmetic delegates to
-`rain-math-float` so offchain calculations retain the same decimal semantics as
-Rain's onchain Float type. `DecimalShares` is reserved for protocol boundaries
-that must preserve decimal scale and reject lossy 18-decimal conversion.
+non-negative values, and tagged identifiers. `FractionalShares` arithmetic
+delegates to `rain-math-float` so offchain calculations retain the same decimal
+semantics as Rain's onchain Float type. `DecimalShares` is reserved for
+string-valued protocol boundaries that must preserve decimal scale (`100.50`
+stays `100.50`); arithmetic and truncation are performed through Rain Float.
 
 The workspace also owns the `st0x-float-macro` and `st0x-float-serde` helper
 packages. Keeping them beside `st0x-finance` ensures every consumer resolves the
 same pinned `rain-math-float` source and therefore the same `Float` type.
 
 ## Usage
+
+`DecimalShares` is available from `v0.3.0`.
 
 ```toml
 [dependencies]
