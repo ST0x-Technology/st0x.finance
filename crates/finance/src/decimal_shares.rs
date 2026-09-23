@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 /// crossed that boundary.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
-pub struct DecimalShares(Decimal);
+pub struct DecimalShares(#[serde(with = "rust_decimal::serde::str")] Decimal);
 
 impl DecimalShares {
     /// Creates an exact share quantity from a decimal value.
@@ -112,6 +112,7 @@ mod tests {
             serde_json::from_str::<DecimalShares>(r#""100.50""#).unwrap(),
             quantity
         );
+        assert!(serde_json::from_str::<DecimalShares>("100.50").is_err());
     }
 
     #[test]
