@@ -2,11 +2,15 @@
 //!
 //! This is a leaf crate with no dependencies on other st0x crates, providing
 //! domain types that multiple crates need: `Symbol`, `FractionalShares`,
-//! `Usdc`, `Usd`, `Positive`, `NonNegative`, `HasZero`, and `Id<Tag>`.
+//! `DecimalShares`, `Usdc`, `Usd`, `Positive`, `NonNegative`, `HasZero`, and
+//! `Id<Tag>`. Use `DecimalShares` for scale-preserving protocol values and
+//! `FractionalShares` for Rain Float arithmetic.
 
 pub use rain_math_float::{Float, FloatError};
+pub use rust_decimal::{Decimal, Error as DecimalError};
 
 mod constraint;
+mod decimal_shares;
 mod id;
 #[cfg(feature = "test-support")]
 pub mod proptest;
@@ -16,6 +20,7 @@ mod usd;
 mod usdc;
 
 pub use constraint::{NonNegative, NotNonNegative, NotPositive, Positive};
+pub use decimal_shares::{ALPACA_MAX_DECIMALS, DecimalShares, DecimalSharesConversionError};
 pub use id::{BlankIdError, Id};
 pub use shares::{FractionalShares, SharesConversionError};
 pub use symbol::{EmptySymbolError, Symbol};

@@ -20,6 +20,7 @@ serde = { workspace = true, features = ["derive"] }
 rain-math-float-macro.workspace = true
 rain-math-float-serde.workspace = true
 thiserror.workspace = true
+rust_decimal.workspace = true
 
 [dev-dependencies]
 proptest.workspace = true
